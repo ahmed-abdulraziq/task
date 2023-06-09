@@ -1,6 +1,6 @@
 <?php
 $endpoint = 'latest';
-$access_key = '239da580925d2e724168af5c88bb2ca7';
+$access_key = 'ba6264e641571b3ac7d55cdf89cb4f72';
 
 $ch = curl_init('http://data.fixer.io/api/' . $endpoint . '?access_key=' . $access_key . '');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -57,7 +57,7 @@ $exchangeRates = json_decode($json, true);
     <h1>
         <?php
         echo $_SERVER['REQUEST_METHOD'] === "POST" ?
-        round(($_POST['to'] * $_POST['num']) / $_POST['from']) : '1';
+            round(($exchangeRates['rates'][$_POST['to']] * $_POST['num']) / $exchangeRates['rates'][$_POST['from']]) : 0;
         ?>
     </h1>
     <form action="" method="post">
@@ -67,7 +67,7 @@ $exchangeRates = json_decode($json, true);
                 <?php
                 $selected = $_SERVER['REQUEST_METHOD'] === "POST" && $_POST['from'];
                 foreach ($exchangeRates['rates'] as $key => $value) {
-                    echo "<option value='$value'>$key</option>";
+                    echo "<option value='$key'" , ($_SERVER['REQUEST_METHOD'] === "POST" && $_POST['from'] === $key) ? "selected" : '' , ">$key</option>";
                 }
                 ?>
             </select>
@@ -77,12 +77,12 @@ $exchangeRates = json_decode($json, true);
             <select name="to" id="to">
                 <?php
                 foreach ($exchangeRates['rates'] as $key => $value) {
-                    echo "<option value='$value'>$key</option>";
+                    echo "<option value='$key'" , ($_SERVER['REQUEST_METHOD'] === "POST" && $_POST['to'] === $key) ? "selected" : '' , ">$key</option>";
                 }
                 ?>
             </select>
         </div>
-        <input type="number" name="num" id="num" value="1">
+        <input type="number" name="num" id="num" value="<?= $_SERVER['REQUEST_METHOD'] === "POST" ? $_POST['num'] : 0 ?>">
         <input type="submit" value="submit">
     </form>
 </body>
